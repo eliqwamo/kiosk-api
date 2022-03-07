@@ -1,0 +1,31 @@
+{
+  "name": "kiosk-api",
+  "version": "1.0.0",
+  "description": "API",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eliqwamo/kiosk-api.git"
+  },
+  "author": "Elihu Chitrit",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/eliqwamo/kiosk-api/issues"
+  },
+  "homepage": "https://github.com/eliqwamo/kiosk-api#readme",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.19.2",
+    "express": "^4.17.3",
+    "jsonwebtoken": "^8.5.1",
+    "moment": "^2.29.1",
+    "mongoose": "^6.2.4"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  }
+}
