@@ -2,10 +2,13 @@ const express = require('express');
 const mongoose = require('mongoose');
 const router = express.Router();
 const bcryptjs = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 //MODELS
 const User = require('../models/user');
+const e = require('express');
 
+//CREATE ACCOUNT
 router.post('/createAccount', async(request, response) => {
     //Get user inputs
     const { firstName, lastName, email, password, mobile } = request.body;
@@ -45,14 +48,92 @@ router.post('/createAccount', async(request, response) => {
             message: err
         });
     })
-
-    
-
-
-
-    //Response
 })
+//LOGIN
+router.post('/login', async(request, response) => {
+    //Get user credentials
+    const {email,password} = request.body;
+    //Is user exist
+    User.findOne({email: email})
+    .then(async account => {
+        if(account){
+            //Is Verified Is locked
+            if(account.isApproved && !account.isLocked){
+                //Compare passwords
+                const isMatch = await bcryptjs.compare(password, account.password);
+                if(isMatch){
+                    //Create TOKEN
+                    const acc_data = {
+                        firstName: account.firstName,
+                        lastName: account.lastName,
+                        avatar: account.avatar,
+                        mobile: account.mobile,
+                        email: account.email,
+                        _id: account._id
+                    };
+                    const token = await jwt.sign(acc_data, 'h8SIJ0Av9eloEvPL2dJDpKawvru7WQFS');
+                    return response.status(200).json({
+                        token: token
+                    });
+                } else {
+                    return response.status(200).json({
+                        message: 'Your password is not match'
+                    });
+                }
+            } else {
+                return response.status(200).json({
+                    message: 'Your account is not active'
+                });
+            }
+        } else {
+            return response.status(200).json({
+                message: 'User not found'
+            });
+        }
+    })
+    .catch(err => {
+        return response.status(500).json({
+            message: err
+        });
+    })
+});
 
+//VERIFY PASSCODE
+router.post('/verify', async(request, response) => {
+    //Get passcode and email
+    const { email,passcode } = request.body;
+    //Is user exist
+    User.findOne({email: email})
+    .then(async account => {
+        if(account){
+            //Verify code
+            if(account.passcode == passcode){
+                //Update isApproved
+                account.isApproved = true;
+                account.save()
+                .then(account_updated => {
+                    //Response
+                    return response.status(200).json({
+                        message: account_updated
+                    });
+                })
+            } else {
+                return response.status(200).json({
+                    message: 'Passcode not match'
+                });
+            }
+        } else {
+            return response.status(200).json({
+                message: 'User not found'
+            });
+        }
+    })
+    .catch(err => {
+        return response.status(500).json({
+            message: err
+        });
+    })
+});
 
 
 function generateRandomIntegerInRange(min, max) {
