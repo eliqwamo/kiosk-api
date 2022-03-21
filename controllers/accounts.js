@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const router = express.Router();
 const bcryptjs = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const isAuth = require('./isAuth');
 
 //MODELS
 const User = require('../models/user');
@@ -97,7 +98,6 @@ router.post('/login', async(request, response) => {
         });
     })
 });
-
 //VERIFY PASSCODE
 router.post('/verify', async(request, response) => {
     //Get passcode and email
@@ -134,13 +134,62 @@ router.post('/verify', async(request, response) => {
         });
     })
 });
-
-
+//FORGET PASSWORD
+router.post('/forgetPassword', async(request,response) => {
+    //Get user email
+    const email = request.body.email;
+    //Is user exist
+    User.findOne({email: email})
+    .then(async account => {
+        if(account){
+            const passcode = generateRandomIntegerInRange(1000,9999);
+            account.passcode = passcode;
+            account.save()
+            .then(account_updated => {
+                return response.status(200).json({
+                    message: account_updated.passcode
+                });
+            })
+        } else {
+            return response.status(200).json({
+                message: 'User not exist'
+            });
+        }
+    })
+    .catch(err => {
+        return response.status(500).json({
+            message: err
+        });
+    })
+})
+router.post('/updateNewPassword', async(request, response) => {
+    const {email,newpassword} = request.body;
+    User.findOne({email: email})
+    .then(async account => {
+        if(account){
+            const formatted_password = await bcryptjs.hash(newpassword, 10);
+            account.password = formatted_password;
+            account.save()
+            .then(account_updated => {
+                return response.status(200).json({
+                    message: account_updated
+                });
+            })
+        } else {
+            return response.status(200).json({
+                message: 'User not exist'
+            });
+        }
+    })
+    .catch(err => {
+        return response.status(500).json({
+            message: err
+        });
+    })
+})
 function generateRandomIntegerInRange(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
-
-
 router.get('/sayHello', async(request, response) => {
     try {
         const users = await User.find();
@@ -154,6 +203,14 @@ router.get('/sayHello', async(request, response) => {
     }
     
 })
+
+
+router.get('/getUserData', isAuth, async(request,response) => {
+    return response.status(200).json({
+        message: `Hello ${request.account.firstName}`
+    });
+})
+
 
 
 
