@@ -7,7 +7,6 @@ const isAuth = require('./isAuth');
 
 //MODELS
 const User = require('../models/user');
-const e = require('express');
 
 //CREATE ACCOUNT
 router.post('/createAccount', async(request, response) => {
@@ -203,8 +202,6 @@ router.get('/sayHello', async(request, response) => {
     }
     
 })
-
-
 router.get('/getUserData', isAuth, async(request,response) => {
     return response.status(200).json({
         message: `Hello ${request.account.firstName}`
