@@ -7,6 +7,7 @@ const isAuth = require('./isAuth');
 
 //MODELS
 const User = require('../models/user');
+const Store = require('../models/store');
 
 //CREATE ACCOUNT
 router.post('/createAccount', async(request, response) => {
@@ -203,10 +204,16 @@ router.get('/sayHello', async(request, response) => {
     
 })
 router.get('/getUserData', isAuth, async(request,response) => {
+    const id = request.account._id;
+    const store = await Store.findOne({associateId: id}).populate('associateId');
     return response.status(200).json({
-        message: `Hello ${request.account.firstName}`
+        data: store
     });
 })
+
+
+
+
 
 
 
