@@ -40,5 +40,58 @@ router.post('/addProduct', isAuth, async(request,response) => { });
 router.put('/updateProduct', isAuth, async(request,response) => { });
 router.delete('/deleteProduct', isAuth, async(request,response) => { });
 
+router.get('/getAllCategories', isAuth, async(request,response) => {
+    const accountId = request.account._id;
+    const store = await Store.findOne({associateId: accountId});
+    Category.find({storeId: store._id})
+    .then(categories => {
+        return response.status(200).json({
+            status: true,
+            message: categories
+        });
+    })
+    .catch(err => {
+        return response.status(500).json({
+            status: false,
+            message: err
+        });
+    })
+ });
+router.get('/getAllProducts', isAuth, async(request,response) => {
+    const accountId = request.account._id;
+    const store = await Store.findOne({associateId: accountId});
+    Product.find({storeId: store._id})
+    .then(products => {
+        return response.status(200).json({
+            status: true,
+            message: products
+        });
+    })
+    .catch(err => {
+        return response.status(500).json({
+            status: false,
+            message: err
+        });
+    })
+ });
+ router.get('/getProductsByCategoryId/:categoryId', isAuth, async(request,response) => {
+    const accountId = request.account._id;
+    const categoryId = request.params.categoryId;
+    const store = await Store.findOne({associateId: accountId});
+    Product.find({storeId: store._id, categoryId: categoryId})
+    .then(products => {
+        return response.status(200).json({
+            status: true,
+            message: products
+        });
+    })
+    .catch(err => {
+        return response.status(500).json({
+            status: false,
+            message: err
+        });
+    })
+ });
+
 
 module.exports = router;
