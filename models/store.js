@@ -33,7 +33,7 @@ const storeSchema = new Schema({
     ],
     workingHours: [
         {
-            day: Number, fromHour: String, toHour: String, isOpen: Boolean
+            day: Number, fromHour: Number, toHour: Number, isOpen: Boolean
         }
     ],
     logo: {type: String, default: 'https://w7.pngwing.com/pngs/340/946/png-transparent-avatar-user-computer-icons-software-developer-avatar-child-face-heroes.png'},

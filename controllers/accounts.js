@@ -203,6 +203,7 @@ router.get('/sayHello', async(request, response) => {
     }
     
 })
+
 router.get('/getUserData', isAuth, async(request,response) => {
     const id = request.account._id;
     const store = await Store.findOne({associateId: id}).populate('associateId');
