@@ -190,20 +190,6 @@ router.post('/updateNewPassword', async(request, response) => {
 function generateRandomIntegerInRange(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
-router.get('/sayHello', async(request, response) => {
-    try {
-        const users = await User.find();
-        return response.status(200).json({
-            message: users
-        });
-    } catch (error) {
-        return response.status(500).json({
-            message: error
-        });
-    }
-    
-})
-
 router.get('/getUserData', isAuth, async(request,response) => {
     const id = request.account._id;
     const store = await Store.findOne({associateId: id}).populate('associateId');

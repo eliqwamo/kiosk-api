@@ -5,11 +5,9 @@ const isAuth = require('./isAuth');
 const User = require('../models/user');
 const Store = require('../models/store');
 
-
 router.put('/updateStore', isAuth, async(request,response) => {
     const associateId = request.account._id;
     const store = await Store.findOne({associateId:associateId});
-
     const {
         storeName,
         storeDescription,
