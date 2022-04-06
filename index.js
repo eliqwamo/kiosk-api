@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const app = express();
 
-app.use(bodyParser.urlencoded());
+app.use(bodyParser.urlencoded({extends:false}));
 app.use(bodyParser.json());
 
 const accountsRoute = require('./controllers/accounts');

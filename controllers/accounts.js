@@ -8,6 +8,8 @@ const isAuth = require('./isAuth');
 //MODELS
 const User = require('../models/user');
 const Store = require('../models/store');
+const Category = require('../models/category');
+const Product = require('../models/product');
 
 //CREATE ACCOUNT
 router.post('/createAccount', async(request, response) => {
@@ -193,6 +195,8 @@ function generateRandomIntegerInRange(min, max) {
 router.get('/getUserData', isAuth, async(request,response) => {
     const id = request.account._id;
     const store = await Store.findOne({associateId: id}).populate('associateId');
+    const categories = await Category.find({storeId: store._id});
+    const products = await Product.find({storeId: store._id});
     return response.status(200).json({
         data: store
     });

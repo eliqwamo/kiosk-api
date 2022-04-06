@@ -6,6 +6,7 @@ const User = require('../models/user');
 const Store = require('../models/store');
 const Category = require('../models/category');
 const Product = require('../models/product');
+
 router.post('/addCategory', isAuth, async(request,response) => {
     const accountId = request.account._id;
     const store = await Store.findOne({associateId: accountId});
@@ -80,9 +81,94 @@ router.delete('/deleteCategory/:categoryId', isAuth, async(request,response) => 
         })
     })
  });
-router.post('/addProduct', isAuth, async(request,response) => { });
-router.put('/updateProduct', isAuth, async(request,response) => { });
-router.delete('/deleteProduct', isAuth, async(request,response) => { });
+router.post('/addProduct/:categoryId', isAuth, async(request,response) => { 
+    const productId = mongoose.Types.ObjectId();
+    const accountId = request.account._id;
+    const store = await Store.findOne({associateId: accountId});
+    const categoryId = request.params.categoryId;
+    const {productName,price,unitInStock,desclimer,isAgeLimitation,imageSource} = request.body;
+
+    const _product = new Product({
+        _id: productId,
+        storeId: store._id,
+        categoryId: categoryId,
+        productName: productName,
+        productImages: [
+            {
+                imageSource: imageSource
+            }
+        ],
+        price: price,
+        unitInStock: unitInStock,
+        desclimer: desclimer,
+        isAgeLimitation: isAgeLimitation
+    })
+    return _product.save()
+    .then(product => {
+        return response.status(200).json({
+            status: true,
+            message: product
+        });
+    })
+    .catch(err => {
+        return response.status(500).json({
+            status: false,
+            message: err
+        });
+    })
+
+
+});
+router.put('/updateProduct/:categoryId/:productId', isAuth, async(request,response) => {
+    const categoryId = request.params.categoryId;
+    const productId = request.params.productId;
+    const product = await Product.findOne({categoryId:categoryId, _id:productId});
+    const {productName,price,unitInStock,desclimer,isAgeLimitation,imageSource,discount} = request.body;
+
+    if(imageSource != ''){
+        product.productImages.push({imageSource:imageSource});
+    }
+
+    product.productName = productName;
+    product.price = price;
+    product.unitInStock = unitInStock;
+    product.desclimer = desclimer;
+    product.isAgeLimitation = isAgeLimitation;
+    product.discount = discount;
+
+    return product.save()
+    .then(product_updated => {
+        return response.status(200).json({
+            status: true,
+            message: product_updated
+        });
+    })
+    .catch(err => {
+        return response.status(500).json({
+            status: false,
+            message: err
+        })
+    })
+});
+router.delete('/deleteProduct/:categoryId/:productId', isAuth, async(request,response) => {
+
+    const categoryId = request.params.categoryId;
+    const productId = request.params.productId;
+    Product.findOneAndDelete({categoryId:categoryId, _id:productId})
+    .then(product_deleted => {
+        return response.status(200).json({
+            status: true,
+            message: product_deleted
+        })
+    })
+    .catch(err => {
+        return response.status(500).json({
+            status: false,
+            message: err
+        })
+    })
+
+});
 router.get('/getAllCategories', isAuth, async(request,response) => {
     const accountId = request.account._id;
     const store = await Store.findOne({associateId: accountId});
