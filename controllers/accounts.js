@@ -197,8 +197,22 @@ router.get('/getUserData', isAuth, async(request,response) => {
     const store = await Store.findOne({associateId: id}).populate('associateId');
     const categories = await Category.find({storeId: store._id});
     const products = await Product.find({storeId: store._id});
+
+    let allProducts = [];
+
+    categories.forEach(category => {
+        let _products = [];
+        products.forEach(product => {
+            if(category._id.equals(product.categoryId)){
+                _products.push(product);
+            }
+        })
+        allProducts.push({ category: category, products: _products });
+    })
+
     return response.status(200).json({
-        data: store
+        data: store,
+        allProducts: allProducts
     });
 })
 
