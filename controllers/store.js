@@ -4,6 +4,8 @@ const router = express.Router();
 const isAuth = require('./isAuth');
 const User = require('../models/user');
 const Store = require('../models/store');
+const Category = require('../models/category');
+const Product = require('../models/product');
 
 router.put('/updateStore', isAuth, async(request,response) => {
     const associateId = request.account._id;
@@ -116,6 +118,13 @@ router.post('/createStore', isAuth, async(request,response) => {
 
 })
 
+router.get('/getGeneralData', async(request,response) => {
+    const stores = await Store.find();
+    return response.status(200).json({
+        status: true,
+        stores: stores
+    });
+})
 
 
 module.exports = router;
